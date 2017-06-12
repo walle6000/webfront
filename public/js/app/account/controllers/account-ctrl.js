@@ -13,9 +13,9 @@
 
 angular.module('ds.account')
 
-    .controller('AccountCtrl', ['$scope', 'addresses', 'account', 'orders', 'OrderListSvc', 'AccountSvc', '$uibModal', 'GlobalData', '$translate',
+    .controller('AccountCtrl', ['$scope', 'addresses', 'account', 'orders', 'wishes', 'OrderListSvc', 'AccountSvc', '$uibModal', 'GlobalData', '$translate',
 
-        function ($scope, addresses, account, orders, OrderListSvc, AccountSvc, $uibModal, GlobalData, $translate) {
+        function ($scope, addresses, account, orders, wishes, OrderListSvc, AccountSvc, $uibModal, GlobalData, $translate) {
 
             var self = this;
             self.allOrdersLoaded = false;
@@ -32,6 +32,7 @@ angular.module('ds.account')
             $scope.account = account;
             $scope.addresses = addresses;
             $scope.orders = orders;
+	        $scope.wishes=wishes;
             $scope.defaultAddress = getDefaultAddress();
 
             // show more or less addresses.
@@ -217,4 +218,15 @@ angular.module('ds.account')
                 order.currencySymbol = GlobalData.getCurrencySymbol(order.currency);
             });
 
+            $scope.currencySymbol = GlobalData.getCurrencySymbol();
+            $scope.openWishlistModal = function () {
+		       $scope.totalPrices=$scope.wishes.reduce(function(acc, w){
+			         return acc+w.amount*$scope.wishes.prices[w.id].singlePrice.effectiveAmount;
+		        }, 0);
+                modalInstance = $uibModal.open({
+                    templateUrl: './js/app/account/templates/wish-total-alert.html',
+                    scope: $scope,
+                    backdrop: 'static'
+                });
+            };
         }]);

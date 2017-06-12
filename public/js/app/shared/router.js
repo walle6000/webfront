@@ -287,6 +287,26 @@ angular.module('ds.router', [])
                                     return [];
                                 }
                             );
+                        }],
+                        wishes: ['WishSvc','PriceSvc', 'GlobalData', function(WishSvc,PriceSvc, GlobalData) {                      
+			                return WishSvc.queryWishList().then(
+                                function (response) {
+                                    return response;
+                                },
+                                function () {
+                                    var wishes = [];
+                                    wishes.error = true;
+                                    return wishes;
+                                }
+                            ).then(function(wishes){
+				                    return PriceSvc.getPricesMapForProducts(wishes, GlobalData.getCurrencyId())
+				                           .then(function (prices) {
+					                            wishes.prices = prices;
+					                            return wishes;
+				                           },function(){
+					                            return wishes;
+				                        });
+			                });
                         }]
                     },
                     data: {

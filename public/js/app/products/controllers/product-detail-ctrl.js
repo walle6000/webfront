@@ -17,8 +17,8 @@ angular.module('ds.products')
      * Listens to the 'cart:updated' event.  Once the item has been added to the cart, and the updated
      * cart information has been retrieved from the service, the 'cart' view will be shown.
      */
-    .controller('ProductDetailCtrl', ['$scope', '$rootScope', '$location', 'CartSvc', 'product', 'lastCatId', 'variantId', 'GlobalData', 'CategorySvc','$filter', '$uibModal', 'shippingZones', 'Notification', 'ProductExtensionHelper', 'ProductVariantsHelper', 'variants', 'variantPrices', 'productFactory', 'FeeSvc',
-        function($scope, $rootScope, $location, CartSvc, product, lastCatId, variantId, GlobalData, CategorySvc, $filter, $uibModal, shippingZones, Notification, ProductExtensionHelper, ProductVariantsHelper, variants, variantPrices, productFactory, FeeSvc) {
+    .controller('ProductDetailCtrl', ['$scope', '$rootScope', '$location', 'CartSvc', 'WishSvc', 'product', 'lastCatId', 'variantId', 'GlobalData', 'CategorySvc','$filter', '$uibModal', 'shippingZones', 'Notification', 'ProductExtensionHelper', 'ProductVariantsHelper', 'variants', 'variantPrices', 'productFactory', 'FeeSvc',
+        function($scope, $rootScope, $location, CartSvc, WishSvc, product, lastCatId, variantId, GlobalData, CategorySvc, $filter, $uibModal, shippingZones, Notification, ProductExtensionHelper, ProductVariantsHelper, variants, variantPrices, productFactory, FeeSvc) {
             var modalInstance;
 
             $scope.activeTab = 'description';
@@ -94,6 +94,7 @@ angular.module('ds.products')
             //input default values must be defined in controller, not html, if tied to ng-model
             $scope.productDetailQty = 1;
             $scope.buyButtonEnabled = true;
+            $scope.wishButtonEnabled = GlobalData.user.isAuthenticated;
 
             $scope.showShippingRates = function(){
 
@@ -147,6 +148,22 @@ angular.module('ds.products')
                     $scope.error = 'ERROR_ADDING_TO_CART';
                 }).finally(function() {
                     $scope.buyButtonEnabled = true;
+                });
+            };
+
+            $scope.addToWishlistFromDetailPage = function () {
+                $scope.error = false;
+                $scope.wishButtonEnabled = false;
+
+                var wishItem = {id:$scope.product.id,product:$scope.product.name,amount:$scope.productDetailQty,createdAt:new Date().toISOString()};
+
+                WishSvc.save(wishItem).then(function(){
+                    var productsAddedToCart = $filter('translate')('PRODUCTS_ADDED_TO_WISHLIST');
+                    Notification.success({message: $scope.productDetailQty + ' ' + productsAddedToCart, delay: 3000});
+                }, function(){
+                    $scope.error = 'ERROR_ADDING_TO_WISHLIST';
+                }).finally(function() {
+                    $scope.wishButtonEnabled = GlobalData.user.isAuthenticated;
                 });
             };
 

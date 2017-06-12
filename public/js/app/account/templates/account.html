@@ -107,4 +107,73 @@
 
   </section>
 
+  <section class="lightgray" ng-cloak>
+    <div class="container-fluid">
+      <div class="row">
+          <div class="col-xs-12">
+            <div class="section-headline clearfix">
+              <h2 class="pull-left">{{'WISHLIST' | translate}}</h2>
+              <button id="add-address-btn" class="btn btn-secondary btn-md pull-right" ng-click="openWishlistModal()">
+              {{'TOTAL_PRICE' | translate}}
+              </button>
+            </div>
+        </div>
+      </div>
+      <div class="hidden-md hidden-lg row">
+        <div ng-repeat="m_wish in wishes" class="col-sm-4 col-xs-12 orderHistoryCard">
+            <div class="cardStatusIdentifier pull-left" ></div>
+            <div class="panel">
+                <div class="panel-body " >
+                    <div class="row">
+                        <div class="col-sm-8 col-xs-8 leftCol">
+                            <p>
+                              <strong>{{'DATE'|translate}}</strong><br/>
+                              {{m_wish.createdAt | date: 'medium'}}
+                            </p>
+                            <p>
+                              <strong>{{'PRODUCT'|translate}}</strong><br/>
+                              {{m_wish.product}}
+                            </p>
+                            <p>
+                              <strong>{{'PRICE'|translate}}</strong><br/>
+			      <price-label price="wishes.prices[m_wish.id].singlePrice" currency-symbol="{{currencySymbol}}"></price-label>
+                            </p>
+                            <p>
+                              <strong>{{'AMOUNT'|translate}}</strong><br/>
+                              {{m_wish.amount}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <div ng-if="wishes.length"  class="table-responsive hidden-sm hidden-xs">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>{{'DATE' | translate}}</th>
+              <th>{{'PRODUCT' | translate}}</th>
+              <th>{{'PRICE' | translate}}</ht>
+              <th>{{'AMOUNT' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr ng-repeat="orderRow in wishes">
+                  <td>{{orderRow.createdAt | date: 'medium'}}</td>
+                  <td>{{orderRow.product}}</td>
+                  <td>{{wishes.prices[orderRow.id].singlePrice.effectiveAmount | currency: currencySymbol}}</td>
+                  <td>{{orderRow.amount}}</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p ng-if="!wishes.error && !wishes.length && wishes.prices">{{'NO_WISHES' | translate}}</p>
+      <p ng-if="wishes.error || !wishes.prices">{{'FAIL_WISHES' | translate}}</p>
+
+    </div>
+
+  </section>
 </div>
